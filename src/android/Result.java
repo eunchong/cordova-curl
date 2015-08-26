@@ -1,8 +1,9 @@
 package ru.appsm.curl;
 
 /**
- * Created by user on 25.08.15.
+ * Created by mnill on 25.08.15.
  */
+
 public class Result {
     byte [] content;
     int headersLength;

@@ -30,8 +30,6 @@ public class CordovaWrapper extends CordovaPlugin {
     File cacheFile;
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
-
-
         if (action.equals("query")) {
             final String url = args.getString(0);
             final JSONArray headersArray = args.getJSONArray(1);
@@ -69,7 +67,7 @@ public class CordovaWrapper extends CordovaPlugin {
                 String content = getStringFromFile(cacheFile.getAbsolutePath());
                 callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, content));
             } catch (Exception e) {
-                callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, ""));
+                callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
             }
         } else {
             return false;

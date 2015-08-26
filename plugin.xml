@@ -58,4 +58,30 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         <source-file src="src/android/testlibrary.h" target-dir="jni" />
         <source-file src="src/android/jniLibsCurl" target-dir="jni"/>
     </platform>
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Curl">
+                <param name="ios-package" value="CDVCurl" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/CDVCurl.h"/>
+        <source-file src="src/ios/CDVCurl.m"/>
+
+        <framework src="Security.framework"/>
+        <framework src="libz.dylib" />
+
+        <source-file src="src/ios/libcurl.a" framework="true" />
+        <header-file src="src/ios/curl/curl.h" />
+        <header-file src="src/ios/curl/curlbuild.h" />
+        <header-file src="src/ios/curl/curlrules.h" />
+        <header-file src="src/ios/curl/curlver.h" />
+        <header-file src="src/ios/curl/easy.h" />
+        <header-file src="src/ios/curl/mprintf.h" />
+        <header-file src="src/ios/curl/multi.h" />
+        <header-file src="src/ios/curl/stdcheaders.h" />
+        <header-file src="src/ios/curl/typecheck-gcc.h" />
+
+    </platform>
 </plugin>
