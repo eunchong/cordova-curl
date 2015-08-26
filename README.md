@@ -24,8 +24,7 @@ The environment variables ANDROID_HOME and ANDROID_NDK_HOME must be set to the p
 
 Three methods are there:
 
-
-**Perform request:** curl.query(successCallback, failCallback, [url(string), headers(array of strings), postData(string, optional), followLocation(boolean, optional, default false)]);
+**Perform request:** curl.query([url(string), headers(array of strings), postData(string, optional), followLocation(boolean, optional, default false)], successCallback, failCallback);
 
 **Reset cookies:** curl.reset(successCallback, failCallback);  
 
@@ -33,7 +32,8 @@ Three methods are there:
 
  
 ### Examples:
-curl.query(function(answer, answerHeaders){alert(answer)}, function(){alert('fail')}, ['http://ru.wikipedia.org/' ['Accept: text/plain', 'Host: ru.wikipedia.org'], null, true]);
+
+curl.query(['https://ru.wikipedia.org/api/', ['Accept: text/plain', 'Host: ru.wikipedia.org'], null, true], function(answer, answerHeaders){alert(answer)}, function(){alert('fail')});
 
 curl.reset(function(){alert('cookies deted')}, function(){alert('fail to delete cookies')});
 
