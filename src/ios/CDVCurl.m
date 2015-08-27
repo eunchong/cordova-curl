@@ -27,10 +27,10 @@ struct MemoryStruct {
 		CDVPluginResult* pluginResult;
 
         NSError *error;
-		NSString *str = [NSString stringWithContentsOfFile:@"db4.txt"
+		NSString *str = [NSString stringWithContentsOfFile:[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"cookie"]
                                                   encoding:NSASCIIStringEncoding
                                                      error:&error];
-		if (error != nil)
+		if (error == nil)
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:str];
 		else
 			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
@@ -87,7 +87,7 @@ struct MemoryStruct {
 		}];
 }
 
-WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
+size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
   size_t realsize = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)userp;
