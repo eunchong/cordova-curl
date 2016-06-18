@@ -4,9 +4,9 @@ var argscheck = require('cordova/argscheck'),
 function Curl() { }
 
 //reset cookies
-Curl.prototype.reset = function(successCallback, errorCallback) {
-    argscheck.checkArgs('ff', 'Curl.query', arguments);
-    exec(successCallback, errorCallback, "Curl", "reset", []);
+Curl.prototype.reset = function(data, successCallback, errorCallback) {
+    argscheck.checkArgs('aff', 'Curl.reset', arguments);
+    exec(successCallback, errorCallback, "Curl", "reset", data);
 };
 
 //make request
@@ -16,9 +16,9 @@ Curl.prototype.query = function(data, successCallback, errorCallback) {
 };
 
 //get cookies
-Curl.prototype.cookie = function(successCallback, errorCallback) {
-    argscheck.checkArgs('ff', 'Curl.cookie', arguments);
-    exec(successCallback, errorCallback, "Curl", "cookie", []);
+Curl.prototype.cookie = function(data, successCallback, errorCallback) {
+    argscheck.checkArgs('aff', 'Curl.cookie', arguments);
+    exec(successCallback, errorCallback, "Curl", "cookie", data);
 };
 
 module.exports = new Curl();

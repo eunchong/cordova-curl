@@ -20,7 +20,7 @@
 
 size_t curlCallback(char *data, size_t size, size_t count, void* userdata);
 
-BOOL downloadUrl(const char* url, struct curl_slist* list, const char* postCharData, bool forward, long* header_size, const char* cookieFile, LPCURL_DOWNLOAD_OBJECT downloadObject ) {
+BOOL downloadUrl(const char* url, struct curl_slist* list, bool isPost, const char* postCharData, bool forward, long* header_size, const char* cookieFile, LPCURL_DOWNLOAD_OBJECT downloadObject ) {
 	CURL* curl = curl_easy_init();
 
 	curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -31,7 +31,7 @@ BOOL downloadUrl(const char* url, struct curl_slist* list, const char* postCharD
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
 
 
-	if (postCharData != NULL)
+	if (isPost)
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postCharData);
 
 	curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookieFile);
@@ -59,7 +59,7 @@ BOOL downloadUrl(const char* url, struct curl_slist* list, const char* postCharD
 }
 
 size_t curlCallback(char *data, size_t size, size_t count, void* userdata) {
-	LOGI("Downloaded data size is " SIZE_T_TYPE, size*count);
+//	LOGI("Downloaded data size is " SIZE_T_TYPE, size*count);
 
     LPCURL_DOWNLOAD_OBJECT downloadObject = (LPCURL_DOWNLOAD_OBJECT) userdata;
     long newSize = 0;
@@ -95,26 +95,34 @@ size_t curlCallback(char *data, size_t size, size_t count, void* userdata) {
 extern "C"
 {
 	JNIEXPORT jobject JNICALL
-	Java_ru_appsm_curl_CordovaWrapper_downloadUrl(JNIEnv* env, jobject obj, jstring url, jobjectArray headers, jbyteArray postData, jboolean forward, jstring cookie) {
+	Java_ru_appsm_curl_CordovaWrapper_downloadUrl(JNIEnv* env, jobject obj, jstring url, jobjectArray headers, jint isPost, jstring postData, jint forward, jstring cookie) {
+        
 		const char* url_c = env->GetStringUTFChars(url, NULL);
 		const char* cookie_c = env->GetStringUTFChars(cookie, NULL);
 
 		const int headers_len = env->GetArrayLength(headers);
 
-		bool forwardLocation = (bool)(forward == JNI_TRUE);
+		bool forwardLocation = false;
+        bool isPostC = FALSE;
+        
+        if (isPost == 1) {
+            isPostC = TRUE;
+        }
+
+        if (forward == 1) {
+            forwardLocation = TRUE;
+        }
 
 		jboolean isCopy;
-		char* postCharData = NULL;
+        const char* postCharData = env->GetStringUTFChars(postData, 0);
+        
+        
+//		if(isCopy)
+//		{
+//		   env->ReleaseByteArrayElements(postData, (jbyte*)postCharData, JNI_ABORT);
+//		}
 
-		if (postData != NULL)
-		    postCharData = (char*) env->GetByteArrayElements(postData, &isCopy);
-
-		if(isCopy)
-		{
-		   env->ReleaseByteArrayElements(postData, (jbyte*)postCharData, JNI_ABORT);
-		}
-
-
+        LOGI("postCharData %s", postCharData);
 
 		struct curl_slist *list = NULL;
 
@@ -133,7 +141,7 @@ extern "C"
         downloadObject->size=0;
 
 		long headersize = 0;
-		if (downloadUrl(url_c, list, postCharData, forwardLocation, &headersize, cookie_c, downloadObject)) {
+		if (downloadUrl(url_c, list, isPostC, postCharData, forwardLocation, &headersize, cookie_c, downloadObject)) {
 
 			env->ReleaseStringUTFChars(url, url_c);
 			env->ReleaseStringUTFChars(cookie, cookie_c);

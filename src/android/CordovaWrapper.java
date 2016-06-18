@@ -21,11 +21,11 @@ import org.json.JSONObject;
 import ru.appsm.curl.Result;
 
 public class CordovaWrapper extends CordovaPlugin {
-
+    
     static {
-		System.loadLibrary("testlibrary");
-	}
-
+        System.loadLibrary("testlibrary");
+    }
+    
     private static final String TAG = "Curl";
     File cacheFile;
     @Override
@@ -36,29 +36,35 @@ public class CordovaWrapper extends CordovaPlugin {
             final String[] headers = new String[headersArray.length()];
             for(int i = 0; i < headersArray.length(); i++) {headers[i] = headersArray.getString(i);}
             String postData = null;
-            try {postData = args.getString(2);} catch (Exception e){}
-
+            try {
+                postData = args.getString(2);
+                if (postData.equals("null"))
+                    postData = null;
+            } catch (Exception e){postData = null;}
+            
             Boolean followLocation = false;
-            try {followLocation = args.getBoolean(3);} catch (Exception e){}
-
+            try {followLocation = args.getBoolean(3);} catch (Exception e){followLocation = false;}
+            
             final String fPostData = postData;
+            final String emptyByte = "null";
             final Boolean fFollowLocation = followLocation;
+            
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
-                    Result content = downloadUrl(url, headers, fPostData != null ? fPostData.getBytes() : null, fFollowLocation, cacheFile.getAbsolutePath());
-                        String contentString = content == null ? null : new String(content.content);
-                        if (contentString != null) {
-                            Log.i(TAG, contentString);
-                            JSONArray result = new JSONArray();
-                            result.put(contentString.substring(content.headersLength, contentString.length()));
-                            result.put(contentString.substring(0, content.headersLength));
-                            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
-                        } else {
-                            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
-                        }
+                    Result content = downloadUrl(url, headers, fPostData != null ? 1 : 0, fPostData != null ? fPostData : emptyByte, fFollowLocation ? 1 : 0, cacheFile.getAbsolutePath());
+                    String contentString = content == null ? null : new String(content.content);
+                    if (contentString != null) {
+                        Log.i(TAG, contentString);
+                        JSONArray result = new JSONArray();
+                        result.put(contentString.substring(content.headersLength, contentString.length()));
+                        result.put(contentString.substring(0, content.headersLength));
+                        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
+                    } else {
+                        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
+                    }
                 }
             });
-
+            
         } else if (action.equals("reset")) {
             cacheFile.delete();
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
@@ -74,7 +80,7 @@ public class CordovaWrapper extends CordovaPlugin {
         }
         return true;
     }
-
+    
     public static String getStringFromFile (String filePath) throws Exception {
         File fl = new File(filePath);
         FileInputStream fin = new FileInputStream(fl);
@@ -82,24 +88,24 @@ public class CordovaWrapper extends CordovaPlugin {
         fin.close();
         return ret;
     }
-
+    
     public static String convertStreamToString(InputStream is) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
         String line = null;
         while ((line = reader.readLine()) != null) {
-          sb.append(line).append("\n");
+            sb.append(line).append("\n");
         }
         reader.close();
         return sb.toString();
     }
-
+    
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-    	super.initialize(cordova, webView);
+        super.initialize(cordova, webView);
         cacheFile = new File(cordova.getActivity().getCacheDir(), "cookie");
         this.cordova = cordova;
     }
-
-	public native Result downloadUrl(String url, String[] headers, byte[] postData, Boolean follow, String cacheFile);
+    
+    public native Result downloadUrl(String url, String[] headers, int isPost, String postData, int follow, String cacheFile);
 }
