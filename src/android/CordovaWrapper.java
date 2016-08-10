@@ -27,13 +27,16 @@ public class CordovaWrapper extends CordovaPlugin {
     }
     
     private static final String TAG = "Curl";
-    File cacheFile;
+    
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        
         if (action.equals("query")) {
             final String url = args.getString(0);
+            
             final JSONArray headersArray = args.getJSONArray(1);
             final String[] headers = new String[headersArray.length()];
+            
             for(int i = 0; i < headersArray.length(); i++) {headers[i] = headersArray.getString(i);}
             String postData = null;
             try {
@@ -42,8 +45,13 @@ public class CordovaWrapper extends CordovaPlugin {
                     postData = null;
             } catch (Exception e){postData = null;}
             
-            Boolean followLocation = false;
+            Boolean followLocation;
             try {followLocation = args.getBoolean(3);} catch (Exception e){followLocation = false;}
+            
+            String cookieName;
+            try {cookieName = args.getString(4);} catch (Exception e){cookieName = "cookie";}
+            
+            final File cacheFile = new File(cordova.getActivity().getFilesDir(), cookieName);
             
             final String fPostData = postData;
             final String emptyByte = "null";
@@ -66,10 +74,16 @@ public class CordovaWrapper extends CordovaPlugin {
             });
             
         } else if (action.equals("reset")) {
+            String cookieName;
+            try {cookieName = args.getString(0);} catch (Exception e){cookieName = "cookie";}
+            File cacheFile = new File(cordova.getActivity().getFilesDir(), cookieName);
             cacheFile.delete();
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
         } else if (action.equals("cookie")) {
             try {
+                String cookieName;
+                try {cookieName = args.getString(0);} catch (Exception e){cookieName = "cookie";}
+                File cacheFile = new File(cordova.getActivity().getFilesDir(), cookieName);
                 String content = getStringFromFile(cacheFile.getAbsolutePath());
                 callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, content));
             } catch (Exception e) {
@@ -103,7 +117,6 @@ public class CordovaWrapper extends CordovaPlugin {
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-        cacheFile = new File(cordova.getActivity().getCacheDir(), "cookie");
         this.cordova = cordova;
     }
     
