@@ -23,57 +23,55 @@ android {
 
     productFlavors
 	{
-	arm64-v8a
-	{
-	    ndk
-	    {
-		abiFilters "arm64-v8a"
-	    }
-	}
-	armeabi-v7a
-	{
-	    ndk
-	    {
-		abiFilters "armeabi-v7a"
-	    }
-	}
-	armeabi
-	{
-	    ndk
-	    {
-		abiFilters "armeabi"
-	    }
-	}
-	mips
-	{
-	    ndk
-	    {
-		abiFilters "mips"
-	    }
-	}
-	mips64
-	{
-	    ndk
-	    {
-		abiFilters "mips64"
-	    }
-	}
-	x86
-	{
-	    ndk
-	    {
-		abiFilters "x86"
-	    }
-	}
-	x86_64
-	{
-	    ndk
-	    {
-		abiFilters "x86_64"
-	    }
-	}
-
-
+		arm64-v8a
+		{
+		    ndk
+		    {
+			abiFilters "arm64-v8a"
+		    }
+		}
+		armeabi-v7a
+		{
+		    ndk
+		    {
+			abiFilters "armeabi-v7a"
+		    }
+		}
+		armeabi
+		{
+		    ndk
+		    {
+			abiFilters "armeabi"
+		    }
+		}
+		mips
+		{
+		    ndk
+		    {
+			abiFilters "mips"
+		    }
+		}
+		mips64
+		{
+		    ndk
+		    {
+			abiFilters "mips64"
+		    }
+		}
+		x86
+		{
+		    ndk
+		    {
+			abiFilters "x86"
+		    }
+		}
+		x86_64
+		{
+		    ndk
+		    {
+			abiFilters "x86_64"
+		    }
+		}
     }
 
     task buildNative(type: Exec, description: 'Compile JNI source via NDK') {
